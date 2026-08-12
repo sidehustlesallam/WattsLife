@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WattsLife translates everyday energy habits into off-grid solar, wind, battery, generator, and hardware cost estimates.">
+  <title>WattsLife | Off-Grid Energy System Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <nav class="topbar" aria-label="Primary">
+        <a class="brand" href="#top" aria-label="WattsLife home">
+          <span class="brand-mark">W</span>
+          <span>WattsLife</span>
+        </a>
+        <div class="nav-pill">GitHub Pages ready</div>
+      </nav>
+
+      <section id="top" class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Off-grid energy made human</p>
+          <h1>Translate daily life into a complete renewable energy system.</h1>
+          <p class="hero-text">
+            Estimate solar panels, roof area, wind turbine scale, battery racks, backup generator needs, and hardware cost from everyday habits like EV miles, showers, and hot drinks.
+          </p>
+          <div class="hero-actions" aria-label="Page sections">
+            <a href="#calculator" class="button button-primary">Start calculating</a>
+            <a href="#details" class="button button-secondary">See system detail</a>
+          </div>
+        </div>
+
+        <aside class="hero-panel" aria-label="Live demand snapshot">
+          <div class="mini-stat">
+            <span>Daily consumption</span>
+            <strong id="heroDemand">0 kWh</strong>
+          </div>
+          <div class="mini-stat">
+            <span>Solar footprint</span>
+            <strong id="heroFootprint">0 m²</strong>
+          </div>
+          <div class="balance-card">
+            <div>
+              <span class="balance-label">Season balance</span>
+              <strong id="heroBalance">Calculating</strong>
+            </div>
+            <span id="heroBalanceBadge" class="status-badge">Live</span>
+          </div>
+        </aside>
+      </section>
+    </header>
+
+    <main>
+      <section id="calculator" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Inputs</p>
+          <h2>Your everyday energy profile</h2>
+          <p>Move the sliders and tap the cards. WattsLife recalculates every output instantly.</p>
+        </div>
+
+        <div class="calculator-grid">
+          <article class="input-card">
+            <div class="card-header">
+              <div>
+                <span class="icon-bubble">⚡</span>
+                <h3>Everyday Power Usage</h3>
+              </div>
+              <p>Layperson-friendly prompts converted to kWh/day.</p>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label">
+                <label for="evMiles">How many miles do you drive your EV daily?</label>
+                <strong><span id="evMilesValue">35</span> mi/day</strong>
+              </div>
+              <input id="evMiles" type="range" min="0" max="120" value="35" step="1">
+              <p class="hint">Uses about 0.33 kWh per mile.</p>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label">
+                <label for="showers">How many hot showers are taken in your house daily?</label>
+                <strong><span id="showersValue">2</span> showers/day</strong>
+              </div>
+              <input id="showers" type="range" min="0" max="8" value="2" step="1">
+              <p class="hint">Assumes roughly 2.0 kWh per shower with electric or heat-pump hot water.</p>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label">
+                <label for="kettles">How many cups of tea or coffee do you boil daily?</label>
+                <strong><span id="kettlesValue">6</span> cups/day</strong>
+              </div>
+              <input id="kettles" type="range" min="0" max="20" value="6" step="1">
+              <p class="hint">Counts about 0.10 kWh for each kettle boil.</p>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label stacked">
+                <span>How is your home heated/cooled?</span>
+                <strong id="climateValue">Moderate · 25 kWh/day</strong>
+              </div>
+              <div class="selector-grid" role="radiogroup" aria-label="Heating and climate control">
+                <button class="selector-card" type="button" data-group="climate" data-value="mild" aria-pressed="false">
+                  <span>Mild</span>
+                  <small>Modern heat pump, well insulated · 12 kWh/day winter</small>
+                </button>
+                <button class="selector-card active" type="button" data-group="climate" data-value="moderate" aria-pressed="true">
+                  <span>Moderate</span>
+                  <small>Heat pump, standard insulation · 25 kWh/day winter</small>
+                </button>
+                <button class="selector-card" type="button" data-group="climate" data-value="heavy" aria-pressed="false">
+                  <span>Heavy</span>
+                  <small>Resistive heat or harsh seasonal AC · 42 kWh/day winter</small>
+                </button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label stacked">
+                <span>Household Size & Everyday Electronics</span>
+                <strong id="householdValue">Medium · 14 kWh/day</strong>
+              </div>
+              <div class="selector-grid" role="radiogroup" aria-label="Household size and electronics">
+                <button class="selector-card" type="button" data-group="household" data-value="small" aria-pressed="false">
+                  <span>Small</span>
+                  <small>1-2 occupants · 8 kWh/day</small>
+                </button>
+                <button class="selector-card active" type="button" data-group="household" data-value="medium" aria-pressed="true">
+                  <span>Medium</span>
+                  <small>3-4 occupants · 14 kWh/day</small>
+                </button>
+                <button class="selector-card" type="button" data-group="household" data-value="large" aria-pressed="false">
+                  <span>Large</span>
+                  <small>5+ occupants · 22 kWh/day</small>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <article class="input-card">
+            <div class="card-header">
+              <div>
+                <span class="icon-bubble">☀</span>
+                <h3>Environment & Climate Conditions</h3>
+              </div>
+              <p>Renewable yield changes dramatically by weather, exposure, and season.</p>
+            </div>
+
+            <div class="season-switch" aria-label="Winter or summer balance">
+              <div>
+                <span class="switch-label">Balance view</span>
+                <strong id="seasonLabel">January · Winter peak demand</strong>
+              </div>
+              <button id="seasonToggle" class="toggle" type="button" role="switch" aria-checked="false">
+                <span>Winter</span>
+                <span>Summer</span>
+                <i aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label stacked">
+                <span>Sunlight Conditions</span>
+                <strong id="sunValue">Low Sun / Overcast · 2.2 PSH</strong>
+              </div>
+              <div class="selector-grid" role="radiogroup" aria-label="Sunlight conditions">
+                <button class="selector-card active" type="button" data-group="sun" data-value="low" aria-pressed="true">
+                  <span>Low Sun / Overcast</span>
+                  <small>UK or Northern Europe · about 2.2 peak sun hours</small>
+                </button>
+                <button class="selector-card" type="button" data-group="sun" data-value="moderate" aria-pressed="false">
+                  <span>Moderate Sun</span>
+                  <small>Central Europe or Mid-US · about 3.6 peak sun hours</small>
+                </button>
+                <button class="selector-card" type="button" data-group="sun" data-value="high" aria-pressed="false">
+                  <span>High Sun</span>
+                  <small>Southern Europe or Sunbelt US · about 5.2 peak sun hours</small>
+                </button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label stacked">
+                <span>Wind Conditions</span>
+                <strong id="windValue">Open Countryside · moderate potential</strong>
+              </div>
+              <div class="selector-grid" role="radiogroup" aria-label="Wind conditions">
+                <button class="selector-card" type="button" data-group="wind" data-value="sheltered" aria-pressed="false">
+                  <span>Sheltered / Urban</span>
+                  <small>Low wind potential and clearance constraints</small>
+                </button>
+                <button class="selector-card active" type="button" data-group="wind" data-value="moderate" aria-pressed="true">
+                  <span>Open Countryside</span>
+                  <small>Moderate wind potential on rolling hills</small>
+                </button>
+                <button class="selector-card" type="button" data-group="wind" data-value="high" aria-pressed="false">
+                  <span>Exposed Coastal / Ridge</span>
+                  <small>High wind potential with strong exposure</small>
+                </button>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-copy">
+                <span class="eyebrow">Demand split</span>
+                <h3>Where the energy goes</h3>
+                <p id="chartSummary">Chart updates live from your inputs.</p>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="energyChart" aria-label="Energy demand donut chart" role="img"></canvas>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section output-section" aria-live="polite">
+        <div class="section-heading">
+          <p class="eyebrow">Section 1</p>
+          <h2>WattsLife setup overview</h2>
+          <p>Fast, tangible guidance for the full off-grid system envelope.</p>
+        </div>
+
+        <div class="summary-grid">
+          <article class="summary-card highlight">
+            <span class="summary-icon">⌁</span>
+            <p>Total calculated daily consumption</p>
+            <strong id="dailyDemand">0 kWh/day</strong>
+            <small id="seasonDemandNote">January winter peak profile</small>
+          </article>
+          <article class="summary-card">
+            <span class="summary-icon">▦</span>
+            <p>Total solar panels & roof surface</p>
+            <strong id="solarSummary">0 panels · 0 m²</strong>
+            <small id="solarSummarySub">0 ft² of clear surface</small>
+          </article>
+          <article class="summary-card">
+            <span class="summary-icon">◌</span>
+            <p>Recommended wind turbine</p>
+            <strong id="windSummary">0 kW</strong>
+            <small id="windSummarySub">Tower scale calculated from site exposure</small>
+          </article>
+          <article class="summary-card">
+            <span class="summary-icon">▤</span>
+            <p>Battery storage capacity</p>
+            <strong id="batterySummary">0 kWh usable</strong>
+            <small id="batterySummarySub">1.5 days of autonomy</small>
+          </article>
+          <article class="summary-card">
+            <span class="summary-icon">↻</span>
+            <p>Auto-start backup generator</p>
+            <strong id="generatorSummary">0 kW</strong>
+            <small id="generatorSummarySub">Fuel and runtime estimate included</small>
+          </article>
+          <article class="summary-card cost">
+            <span class="summary-icon">£</span>
+            <p>Estimated hardware investment</p>
+            <strong id="costSummary">$0 - $0</strong>
+            <small id="costSummarySub">Approximate £ range shown in detail</small>
+          </article>
+        </div>
+      </section>
+
+      <section id="details" class="section details-section">
+        <div class="section-heading">
+          <p class="eyebrow">Section 2</p>
+          <h2>System detail & physical metaphors</h2>
+          <p>Technical outputs translated into roof space, building height, rack size, fuel, and hardware budgets.</p>
+        </div>
+
+        <div class="detail-grid">
+          <article class="detail-card">
+            <div class="detail-title">
+              <span class="detail-icon">☀</span>
+              <div>
+                <h3>Solar array specs & space requirements</h3>
+                <p id="solarSeasonYield">Generation estimate loading</p>
+              </div>
+            </div>
+            <dl class="metric-list">
+              <div>
+                <dt>Array capacity</dt>
+                <dd id="solarCapacity">0 kWp</dd>
+              </div>
+              <div>
+                <dt>420W panels</dt>
+                <dd id="panelCount">0 panels</dd>
+              </div>
+              <div>
+                <dt>Surface area</dt>
+                <dd id="solarArea">0 m² / 0 ft²</dd>
+              </div>
+            </dl>
+            <p class="metaphor" id="solarMetaphor">Equivalent footprint loading.</p>
+          </article>
+
+          <article class="detail-card">
+            <div class="detail-title">
+              <span class="detail-icon">◌</span>
+              <div>
+                <h3>Wind turbine specs & dimensions</h3>
+                <p id="windSeasonYield">Wind generation estimate loading</p>
+              </div>
+            </div>
+            <dl class="metric-list">
+              <div>
+                <dt>Turbine capacity</dt>
+                <dd id="windCapacity">0 kW</dd>
+              </div>
+              <div>
+                <dt>Rotor diameter</dt>
+                <dd id="rotorDiameter">0 m</dd>
+              </div>
+              <div>
+                <dt>Tower height</dt>
+                <dd id="towerHeight">0 m</dd>
+              </div>
+            </dl>
+            <p class="metaphor" id="windMetaphor">Wind turbine recommendation loading.</p>
+          </article>
+
+          <article class="detail-card">
+            <div class="detail-title">
+              <span class="detail-icon">▤</span>
+              <div>
+                <h3>Battery storage bank</h3>
+                <p>Usable LFP capacity sized for 1.5 days of autonomy.</p>
+              </div>
+            </div>
+            <dl class="metric-list">
+              <div>
+                <dt>Usable capacity</dt>
+                <dd id="batteryCapacity">0 kWh</dd>
+              </div>
+              <div>
+                <dt>Estimated weight</dt>
+                <dd id="batteryWeight">0 kg</dd>
+              </div>
+              <div>
+                <dt>Physical dimensions</dt>
+                <dd id="batteryDimensions">0 × 0 × 0 cm</dd>
+              </div>
+            </dl>
+            <p class="metaphor" id="batteryMetaphor">Battery footprint loading.</p>
+          </article>
+
+          <article class="detail-card">
+            <div class="detail-title">
+              <span class="detail-icon">↻</span>
+              <div>
+                <h3>Auto-start backup generator integration</h3>
+                <p>Triggers automatically when battery SOC drops below 20% during consecutive overcast, low-wind winter days.</p>
+              </div>
+            </div>
+            <dl class="metric-list">
+              <div>
+                <dt>Minimum continuous rating</dt>
+                <dd id="generatorCapacity">0 kW</dd>
+              </div>
+              <div>
+                <dt>Recommended fuel</dt>
+                <dd id="fuelType">LPG</dd>
+              </div>
+              <div>
+                <dt>Winter monthly runtime</dt>
+                <dd id="generatorRuntime">0 hours</dd>
+              </div>
+              <div>
+                <dt>Fuel usage</dt>
+                <dd id="fuelUsage">0 L/month</dd>
+              </div>
+            </dl>
+            <p class="metaphor" id="generatorMetaphor">Generator role loading.</p>
+          </article>
+
+          <article class="detail-card wide">
+            <div class="detail-title">
+              <span class="detail-icon">£</span>
+              <div>
+                <h3>Cost breakdown module</h3>
+                <p>Hardware-only planning range using common market assumptions.</p>
+              </div>
+            </div>
+            <div class="cost-breakdown">
+              <div>
+                <span>Solar panels & racking</span>
+                <strong id="solarCost">$0 - $0</strong>
+                <small>~$0.80 - $1.10 per Wp</small>
+              </div>
+              <div>
+                <span>Wind turbine & mast</span>
+                <strong id="windCost">$0 - $0</strong>
+                <small>~$2,200 - $3,000 per kW</small>
+              </div>
+              <div>
+                <span>LFP battery racks</span>
+                <strong id="batteryCost">$0 - $0</strong>
+                <small>~$250 - $350 per kWh usable</small>
+              </div>
+              <div>
+                <span>Inverter/charger & generator</span>
+                <strong id="inverterCost">$4,500 - $7,500</strong>
+                <small>Off-grid inverter stack plus auto-start generator</small>
+              </div>
+            </div>
+            <div class="total-cost">
+              <span>Total estimated hardware cost range</span>
+              <strong id="totalCost">$0 - $0</strong>
+              <small id="totalCostGbp">Approx. £0 - £0 before project-specific design, labor, shipping, permitting, and taxes.</small>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>WattsLife provides educational estimates, not final engineering design. Always validate with qualified local installers and code requirements.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
