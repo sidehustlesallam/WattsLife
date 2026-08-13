@@ -4,12 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="WattsLife translates everyday energy habits into off-grid solar, wind, battery, generator, and hardware cost estimates.">
+  <meta name="theme-color" content="#07110f">
   <title>WattsLife | Off-Grid Energy System Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,7 +22,20 @@
           <span class="brand-mark">W</span>
           <span>WattsLife</span>
         </a>
-        <div class="nav-pill">GitHub Pages ready</div>
+        <div class="topbar-actions" aria-label="Display and export tools">
+          <div id="currencyToggle" class="segmented-control" aria-label="Currency">
+            <button type="button" data-currency="USD" aria-pressed="true">$</button>
+            <button type="button" data-currency="GBP" aria-pressed="false">£</button>
+            <button type="button" data-currency="EUR" aria-pressed="false">€</button>
+          </div>
+          <div id="unitToggle" class="segmented-control" aria-label="Area units">
+            <button type="button" data-units="metric" aria-pressed="true">m²</button>
+            <button type="button" data-units="imperial" aria-pressed="false">ft²</button>
+          </div>
+          <button id="themeToggle" class="tool-button" type="button" aria-pressed="false">Sunlight mode</button>
+          <button id="shareButton" class="tool-button" type="button">Copy link</button>
+          <button id="printButton" class="tool-button" type="button">Export spec sheet</button>
+        </div>
       </nav>
 
       <section id="top" class="hero-grid">
@@ -34,6 +49,7 @@
             <a href="#calculator" class="button button-primary">Start calculating</a>
             <a href="#details" class="button button-secondary">See system detail</a>
           </div>
+          <p id="shareStatus" class="share-status" role="status" aria-live="polite"></p>
         </div>
 
         <aside class="hero-panel" aria-label="Live demand snapshot">
@@ -52,6 +68,10 @@
             </div>
             <span id="heroBalanceBadge" class="status-badge">Live</span>
           </div>
+          <div class="plain-advice">
+            <span>Plain-English recommendation</span>
+            <strong id="heroAdvice">Calculating the best next step.</strong>
+          </div>
         </aside>
       </section>
     </header>
@@ -62,6 +82,18 @@
           <p class="eyebrow">Inputs</p>
           <h2>Your everyday energy profile</h2>
           <p>Move the sliders and tap the cards. WattsLife recalculates every output instantly.</p>
+        </div>
+
+        <div class="preset-bar" aria-label="Preset user profiles">
+          <div>
+            <span class="switch-label">Start with a preset</span>
+            <strong>Pick the closest lifestyle, then fine-tune it.</strong>
+          </div>
+          <div class="preset-actions">
+            <button type="button" class="preset-chip" data-preset="cabin">🏙️ Off-Grid Cabin</button>
+            <button type="button" class="preset-chip active" data-preset="homestead">🏡 Suburban Homestead</button>
+            <button type="button" class="preset-chip" data-preset="power">⚡ Power User + EV</button>
+          </div>
         </div>
 
         <div class="calculator-grid">
@@ -166,6 +198,15 @@
             </div>
 
             <div class="control-group">
+              <div class="control-label">
+                <label for="seasonMonth">Season stress-test month</label>
+                <strong id="seasonMonthValue">January</strong>
+              </div>
+              <input id="seasonMonth" type="range" min="1" max="7" value="1" step="1">
+              <p class="hint" id="seasonPhysicsNote">Deep winter lowers heat-pump efficiency and solar yield; July shows surplus potential.</p>
+            </div>
+
+            <div class="control-group">
               <div class="control-label stacked">
                 <span>Sunlight Conditions</span>
                 <strong id="sunValue">Low Sun / Overcast · 2.2 PSH</strong>
@@ -203,6 +244,53 @@
                 <button class="selector-card" type="button" data-group="wind" data-value="high" aria-pressed="false">
                   <span>Exposed Coastal / Ridge</span>
                   <small>High wind potential with strong exposure</small>
+                </button>
+              </div>
+              <p class="warning-note" id="windWarning">Wind warning will update from your site selection.</p>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label stacked">
+                <span>Roof Pitch & Orientation</span>
+                <strong id="roofValue">Ideal south-facing roof · 0% penalty</strong>
+              </div>
+              <div class="selector-grid" role="radiogroup" aria-label="Roof pitch and orientation">
+                <button class="selector-card active" type="button" data-group="roof" data-value="ideal" aria-pressed="true">
+                  <span>South-facing / ideal tilt</span>
+                  <small>Best case roof or ground mount · 0% penalty</small>
+                </button>
+                <button class="selector-card" type="button" data-group="roof" data-value="eastwest" aria-pressed="false">
+                  <span>East / West split</span>
+                  <small>Good daily spread · about 14% yield penalty</small>
+                </button>
+                <button class="selector-card" type="button" data-group="roof" data-value="flat" aria-pressed="false">
+                  <span>Flat / shallow roof</span>
+                  <small>Needs spacing and tilt frames · about 22% penalty</small>
+                </button>
+                <button class="selector-card" type="button" data-group="roof" data-value="shaded" aria-pressed="false">
+                  <span>Partial shade</span>
+                  <small>Trees, chimneys, dormers · about 35% penalty</small>
+                </button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label stacked">
+                <span>EV Battery Buffer & Smart Load Scheduling</span>
+                <strong id="v2hValue">No V2H emergency battery</strong>
+              </div>
+              <div class="selector-grid" role="radiogroup" aria-label="Vehicle to home battery buffer">
+                <button class="selector-card active" type="button" data-group="v2h" data-value="none" aria-pressed="true">
+                  <span>No V2H</span>
+                  <small>EV charging is a load only</small>
+                </button>
+                <button class="selector-card" type="button" data-group="v2h" data-value="standard" aria-pressed="false">
+                  <span>V2H ready EV</span>
+                  <small>About 30 kWh emergency reserve if plugged in</small>
+                </button>
+                <button class="selector-card" type="button" data-group="v2h" data-value="large" aria-pressed="false">
+                  <span>Large bidirectional EV</span>
+                  <small>About 55 kWh emergency reserve for storm days</small>
                 </button>
               </div>
             </div>
@@ -265,6 +353,12 @@
             <strong id="costSummary">$0 - $0</strong>
             <small id="costSummarySub">Approximate £ range shown in detail</small>
           </article>
+          <article class="summary-card advice-card">
+            <span class="summary-icon">✓</span>
+            <p>Best user-first next step</p>
+            <strong id="userAdviceTitle">Review site fit</strong>
+            <small id="userAdvice">Plain-English guidance will update from your setup.</small>
+          </article>
         </div>
       </section>
 
@@ -299,6 +393,7 @@
               </div>
             </dl>
             <p class="metaphor" id="solarMetaphor">Equivalent footprint loading.</p>
+            <p class="metaphor secondary" id="roofPenaltyNote">Roof penalty loading.</p>
           </article>
 
           <article class="detail-card">
@@ -324,6 +419,7 @@
               </div>
             </dl>
             <p class="metaphor" id="windMetaphor">Wind turbine recommendation loading.</p>
+            <p class="metaphor secondary" id="windCutInNote">Cut-in wind speed warning loading.</p>
           </article>
 
           <article class="detail-card">
@@ -349,6 +445,7 @@
               </div>
             </dl>
             <p class="metaphor" id="batteryMetaphor">Battery footprint loading.</p>
+            <p class="metaphor secondary" id="v2hMetaphor">V2H buffer loading.</p>
           </article>
 
           <article class="detail-card">
@@ -378,6 +475,92 @@
               </div>
             </dl>
             <p class="metaphor" id="generatorMetaphor">Generator role loading.</p>
+          </article>
+
+          <article class="detail-card wide">
+            <div class="detail-title">
+              <span class="detail-icon">▥</span>
+              <div>
+                <h3>Interactive footprint visualizer</h3>
+                <p id="footprintSummary">Solar array scale compared with familiar surfaces.</p>
+              </div>
+            </div>
+            <div class="footprint-layout">
+              <svg id="footprintSvg" class="footprint-svg" viewBox="0 0 720 260" role="img" aria-labelledby="footprintTitle footprintDesc">
+                <title id="footprintTitle">Solar footprint visualizer</title>
+                <desc id="footprintDesc">Top-down comparison of the calculated solar array against a garage roof and tennis court.</desc>
+                <rect x="28" y="76" width="130" height="92" rx="14" class="reference-shape"></rect>
+                <text x="93" y="194" text-anchor="middle">2-car garage</text>
+                <rect x="206" y="42" width="218" height="152" rx="18" class="reference-shape muted"></rect>
+                <text x="315" y="220" text-anchor="middle">Half tennis court</text>
+                <rect id="solarFootprintRect" x="482" y="74" width="120" height="96" rx="16" class="solar-shape"></rect>
+                <text id="solarFootprintText" x="542" y="196" text-anchor="middle">Your array</text>
+              </svg>
+              <div class="footprint-copy">
+                <strong id="footprintArea">0 m²</strong>
+                <p id="footprintMetaphor">Footprint metaphor loading.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="detail-card">
+            <div class="detail-title">
+              <span class="detail-icon">☔</span>
+              <div>
+                <h3>Days of autonomy survival simulator</h3>
+                <p>Stress-test rainy, windless winter days and see when the generator starts.</p>
+              </div>
+            </div>
+            <div class="control-group compact">
+              <div class="control-label">
+                <label for="stormDays">Straight poor-weather days</label>
+                <strong><span id="stormDaysValue">4</span> days</strong>
+              </div>
+              <input id="stormDays" type="range" min="1" max="7" value="4" step="1">
+            </div>
+            <div class="soc-track" aria-label="Battery state of charge">
+              <span id="socFill"></span>
+            </div>
+            <dl class="metric-list">
+              <div>
+                <dt>End state of charge</dt>
+                <dd id="survivalSoc">0%</dd>
+              </div>
+              <div>
+                <dt>Generator starts</dt>
+                <dd id="generatorStart">Day 0</dd>
+              </div>
+              <div>
+                <dt>Reserve included</dt>
+                <dd id="reserveIncluded">Home battery only</dd>
+              </div>
+            </dl>
+            <p class="metaphor" id="survivalNarrative">Storm simulation loading.</p>
+          </article>
+
+          <article class="detail-card">
+            <div class="detail-title">
+              <span class="detail-icon">☕</span>
+              <div>
+                <h3>Off-grid appliance equivalents</h3>
+                <p>Translate the usable battery bank into everyday limits.</p>
+              </div>
+            </div>
+            <div class="equivalent-grid">
+              <div>
+                <strong id="starlinkHours">0</strong>
+                <span>hours of Starlink internet</span>
+              </div>
+              <div>
+                <strong id="laundryLoads">0</strong>
+                <span>efficient laundry loads</span>
+              </div>
+              <div>
+                <strong id="espressoShots">0</strong>
+                <span>espresso shots</span>
+              </div>
+            </div>
+            <p class="metaphor" id="applianceNarrative">Appliance equivalent loading.</p>
           </article>
 
           <article class="detail-card wide">
@@ -422,6 +605,7 @@
 
     <footer class="footer">
       <p>WattsLife provides educational estimates, not final engineering design. Always validate with qualified local installers and code requirements.</p>
+      <p id="pwaStatus">Offline support activates after the first successful page load.</p>
     </footer>
   </div>
 
