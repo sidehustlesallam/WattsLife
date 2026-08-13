@@ -58,6 +58,47 @@ This document outlines planned improvements, feature enhancements, and creative 
 
 ---
 
+## 🌱 5. Future User-First Feature & UX Enhancements
+
+- [ ] **Guided Setup Wizard for First-Time Users:**
+  - Offer a step-by-step mode that asks one plain-English question at a time, then reveals the full dashboard after the user has enough context.
+  - Include "Why this matters" helper text beside each question for non-technical users.
+- [ ] **Save & Compare Multiple Scenarios:**
+  - Let users save named scenarios locally, such as *Budget Cabin*, *Family Winter*, and *EV Upgrade*.
+  - Add a comparison table that highlights changes in panel count, battery size, generator runtime, footprint, and cost.
+- [ ] **Editable Assumptions / Advanced Mode:**
+  - Add an assumptions drawer where confident users can adjust panel wattage, panel area, system loss factor, battery autonomy days, energy prices, and cost multipliers.
+  - Keep default assumptions locked behind simple language so new users are not overwhelmed.
+- [ ] **Location-Aware Climate Lookup:**
+  - Allow users to enter a postcode, ZIP code, or nearest city to prefill peak sun hours, seasonal solar multipliers, and wind exposure guidance.
+  - Include a manual fallback so the app still works offline.
+- [ ] **Installer-Ready Bill of Materials:**
+  - Generate a plain-language parts list with solar panels, mounting type, inverter/charger class, battery rack count, generator class, safety disconnects, and monitoring hardware.
+  - Keep it non-brand-specific unless users intentionally choose vendor presets later.
+- [ ] **Essential Loads Priority Planner:**
+  - Let users tag loads as *critical*, *comfort*, or *optional*.
+  - Show a storm-mode plan that prioritizes fridge/freezer, medical equipment, comms, lighting, heating controls, water pump, and cooking.
+- [ ] **Confidence Ranges & Risk Flags:**
+  - Display low/typical/high estimate bands for generation, consumption, and hardware cost.
+  - Add plain-language risk flags such as *roof area likely insufficient*, *generator dependency high*, *battery room heavy load*, and *wind planning risk*.
+- [ ] **Grid-Connection / Fuel-Only Comparison:**
+  - Compare the off-grid system against estimated grid connection cost, diesel-only operation, or hybrid generator-plus-battery alternatives.
+  - Explain tradeoffs in reliability, noise, emissions, maintenance, and upfront cost.
+- [ ] **Mobile Property Walkthrough Checklist:**
+  - Add a field-survey checklist for users walking their site: roof photos, compass direction, shading notes, battery room dimensions, generator distance, fuel storage, and mast clearance.
+  - Export the checklist alongside the spec sheet.
+- [ ] **Accessibility & Plain-Language Audit:**
+  - Run a dedicated WCAG pass for keyboard navigation, focus states, color contrast, screen-reader labels, and reduced-motion preferences.
+  - Add a glossary for terms like kWh, kWp, SOC, COP, peak sun hours, LFP, and inverter/charger.
+- [ ] **Localization & Regional Defaults:**
+  - Add regional presets for UK, EU, US, and Australia with localized currency, units, climate examples, fuel terminology, and electrical guidance notes.
+  - Keep all calculations transparent and editable.
+- [ ] **Optional Vendor Quote Pack Export:**
+  - Generate a clean installer email brief with the user's assumptions, charts, physical metaphors, site warnings, and requested quote categories.
+  - Include a reminder that WattsLife is educational and should be validated by qualified professionals.
+
+---
+
 ## 🤖 Handoff Instructions for Cursor / AI Agents
 
 When implementing features from this roadmap:
