@@ -1,0 +1,18 @@
+{
+  "name": "WattsLife Off-Grid Calculator",
+  "short_name": "WattsLife",
+  "description": "Translate everyday energy habits into off-grid solar, wind, battery, generator, and hardware cost estimates.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07110f",
+  "theme_color": "#07110f",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
